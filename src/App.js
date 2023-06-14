@@ -1,30 +1,54 @@
 import React, { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 //console.log(React);
 
-const orders = [100, 200, 300];
-
 function App() {
-  const [counter, setCounter] = useState(() => {
-    const total = orders.reduce((total, i) => total + i);
-    return total;
+  const [todo, setTodo] = useState("");
+  const [todos, setTodos] = useState(() => {
+    const storeTodos = JSON.parse(localStorage.getItem("todos"));
+    return storeTodos ?? [];
   });
-  const [info, setInfo] = useState({ name: "abc", age: "25" });
-  const handleClick = () => {
-    setCounter((a) => a + 1);
-    setCounter((a) => a + 1);
-    // setCounter(counter + 1);
-  };
-  const handleAddInfo = () => {
-    setInfo((pre) => ({ ...pre, bio: "Love pink" }));
-    // setInfo({ ...info, bio: "Love pink" });
+  const handleSubmit = () => {
+    if (todo === "") {
+      toast.warn("Please enter a todo", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+      return;
+    }
+    setTodos((prev) => {
+      const newTodos = [...prev, todo];
+      const jsonTodos = JSON.stringify(newTodos);
+      localStorage.setItem("todos", jsonTodos);
+
+      return newTodos;
+    });
+    setTodo("");
   };
   return (
-    <div className="App" style={{ padding: 10 }}>
-      <h1>{counter}</h1>
-      <button onClick={handleClick}>Increase</button>
-      <h1>{JSON.stringify(info)}</h1>
-      <button onClick={handleAddInfo}>Add Proper</button>
-    </div>
+    <>
+      <div className="App" style={{ alignContent: "center" }}>
+        <input
+          type="text"
+          value={todo}
+          onChange={(e) => setTodo(e.target.value)}
+        />
+        <button onClick={handleSubmit}>Add</button>
+        <ul>
+          {todos.map((todo, index) => (
+            <li key={index}>{todo}</li>
+          ))}
+        </ul>
+      </div>
+      <ToastContainer />
+    </>
   );
 }
 
