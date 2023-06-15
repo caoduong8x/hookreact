@@ -1,5 +1,6 @@
 //callback luôn được gọi sau khi component mounted
 //cleanup function luôn được gọi trước khi component unmounted
+//cleanup function luôn được gọi trước khi callback được gọi (trừ lần mounted)
 //1.useEffect(callback);
 //  - Gọi sau mỗi khi component re-render
 //2.useEffect(callback,[]);
@@ -14,18 +15,22 @@
 import React, { useState, useEffect } from "react";
 
 function Content() {
-  const [countDown, setCountDown] = useState(180);
+  const [avatar, setAvatar] = useState();
   useEffect(() => {
-    const timerID = setInterval(() => setCountDown((pre) => pre - 1), 1000);
-    return () => clearInterval(timerID);
-  }, []);
-
-  // hoac dung
-  // useEffect(() => {
-  //   const timerID = setTimeout(() => setCountDown(countDown - 1), 1000);
-  //   return () => clearTimeout(timerID);
-  // }, [countDown]);
-
-  return <h1>{countDown}</h1>;
+    return () => {
+      avatar && URL.revokeObjectURL(avatar);
+    };
+  }, [avatar]);
+  const handlePreview = (e) => {
+    const file = e.target.files[0];
+    const url = URL.createObjectURL(file);
+    setAvatar(url);
+  };
+  return (
+    <>
+      <input type="file" onChange={handlePreview} />
+      <img src={avatar} alt="" width="80%" />
+    </>
+  );
 }
 export default Content;
