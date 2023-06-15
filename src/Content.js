@@ -1,60 +1,36 @@
-//callback luôn được gọi sau khi component mounted
-//cleanup function luôn được gọi trước khi component unmounted
-//cleanup function luôn được gọi trước khi callback được gọi (trừ lần mounted)
-//1.useEffect(callback);
-//  - Gọi sau mỗi khi component re-render
-//2.useEffect(callback,[]);
-//  - Chỉ gọi callback 1 lần sau khi component mounted
-//3.useEffect(callback,[deps]);
-//  - Callback chỉ được gọi lại mỗi khi deps thay đổi
-//Chức năng useEffect
-//1. Update DOM
-//2. Call API
+//useEffect()
+//1. Cập nhật lại state
+//2. Cập nhật DOM (mutated)
+//3. Render lại UI
+//4. Gọi cleanup function nếu deps thay đổi
+//5. Gọi lại useEffect callback
 //-------------------------------------------------
-
-import React, { useState, useEffect } from "react";
-const lessons = [
-  {
-    id: 1,
-    name: "React",
-  },
-  {
-    id: 2,
-    name: "React Hooks",
-  },
-  {
-    id: 3,
-    name: "React Component",
-  },
-];
+//useLayoutEffect()
+//1. Cập nhật lại state
+//2. Cập nhật DOM (mutated)
+//3. Gọi cleanup function nếu deps thay đổi (sync)
+//4. Gọi lại useLayoutEffect callback (synsc)
+//5. Render lại UI
+import React, { useState, useEffect, useLayoutEffect } from "react";
 
 function Content() {
-  const [lessonID, setLessonID] = useState(1);
-  useEffect(() => {
-    const handleComment = ({ detail }) => {
-      console.log(detail);
-    };
-    window.addEventListener(`lesson-${lessonID}`, handleComment);
-    return () => {
-      window.removeEventListener(`lesson-${lessonID}`, handleComment);
-    };
-  }, [lessonID]);
+  const [count, setCount] = useState(0);
 
+  // useEffect(() => {
+  //   if (count > 3) setCount(0);
+  // }, [count]);
+
+  useLayoutEffect(() => {
+    if (count > 3) setCount(0);
+  }, [count]);
+
+  const handleRun = () => {
+    setCount(count + 1);
+  };
   return (
     <div>
-      <ul>
-        {lessons.map((lesson) => (
-          <li
-            key={lesson.id}
-            style={
-              lessonID === lesson.id ? { color: "red" } : { color: "#333" }
-            }
-            // style={{ color: lessonID === lesson.id ? "red" : "#333" }}
-            onClick={() => setLessonID(lesson.id)}>
-            {lesson.name}
-          </li>
-        ))}
-      </ul>
+      <h1>{count}</h1>
+      <button onClick={handleRun}>Run</button>
     </div>
   );
 }
