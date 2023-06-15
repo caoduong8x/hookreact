@@ -13,24 +13,49 @@
 //-------------------------------------------------
 
 import React, { useState, useEffect } from "react";
+const lessons = [
+  {
+    id: 1,
+    name: "React",
+  },
+  {
+    id: 2,
+    name: "React Hooks",
+  },
+  {
+    id: 3,
+    name: "React Component",
+  },
+];
 
 function Content() {
-  const [avatar, setAvatar] = useState();
+  const [lessonID, setLessonID] = useState(1);
   useEffect(() => {
-    return () => {
-      avatar && URL.revokeObjectURL(avatar);
+    const handleComment = ({ detail }) => {
+      console.log(detail);
     };
-  }, [avatar]);
-  const handlePreview = (e) => {
-    const file = e.target.files[0];
-    const url = URL.createObjectURL(file);
-    setAvatar(url);
-  };
+    window.addEventListener(`lesson-${lessonID}`, handleComment);
+    return () => {
+      window.removeEventListener(`lesson-${lessonID}`, handleComment);
+    };
+  }, [lessonID]);
+
   return (
-    <>
-      <input type="file" onChange={handlePreview} />
-      <img src={avatar} alt="" width="80%" />
-    </>
+    <div>
+      <ul>
+        {lessons.map((lesson) => (
+          <li
+            key={lesson.id}
+            style={
+              lessonID === lesson.id ? { color: "red" } : { color: "#333" }
+            }
+            // style={{ color: lessonID === lesson.id ? "red" : "#333" }}
+            onClick={() => setLessonID(lesson.id)}>
+            {lesson.name}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 export default Content;
