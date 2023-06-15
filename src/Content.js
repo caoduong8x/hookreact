@@ -1,4 +1,5 @@
 //callback luôn được gọi sau khi component mounted
+//cleanup function luôn được gọi trước khi component unmounted
 //1.useEffect(callback);
 //  - Gọi sau mỗi khi component re-render
 //2.useEffect(callback,[]);
@@ -17,6 +18,8 @@ function Content() {
   const [title, setTitle] = useState("");
   const [posts, setPosts] = useState([]);
   const [type, setType] = useState("posts");
+  const [showGoToTop, setShowGoToTop] = useState(false);
+  const [width, setWidth] = useState(window.innerWidth);
 
   useEffect(() => {
     document.title = title;
@@ -39,6 +42,31 @@ function Content() {
         setPosts(p);
       });
   }, [type]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      console.log(window.scrollY);
+      setShowGoToTop(window.scrollY >= 200);
+    };
+    window.addEventListener("scroll", handleScroll);
+
+    //cleanup function
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+    };
+    window.addEventListener("resize", handleResize);
+
+    //cleanup function
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
   return (
     <>
       {tabs.map((tab) => (
@@ -56,11 +84,22 @@ function Content() {
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
+      <h1>Width: {width}</h1>
       <ul>
         {posts.map((post) => (
           <li key={post.id}>{post.title || post.name}</li>
         ))}
       </ul>
+      {showGoToTop && (
+        <button
+          style={{ position: "fixed", right: 20, bottom: 20 }}
+          onClick={() => {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+          }}>
+          Go to top
+        </button>
+      )}
     </>
   );
 }
