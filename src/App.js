@@ -1,32 +1,21 @@
+//1. memo() -> Higher Order Component (HOC)
+//2. useCallback()
 import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Content from "./Content";
-//console.log(React);
 
 function App() {
-  const [show, setShow] = useState(false);
-
+  const [count, setCount] = useState(0);
+  const increase = () => {
+    setCount(count + 1);
+  };
   return (
     <>
-      <div className="App" style={{ padding: 10 }}>
-        <button
-          onClick={() => {
-            setShow(!show);
-            toast.success(show ? "Hide" : "Show", {
-              position: "top-center",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "colored",
-            });
-          }}>
-          Toggle
-        </button>
-        {show && <Content />}
+      <div style={{ padding: "10px 30px" }}>
+        <Content Count={count} />
+        <h1>{count}</h1>
+        <button onClick={increase}>Increase</button>
       </div>
       <ToastContainer />
     </>

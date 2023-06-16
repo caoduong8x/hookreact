@@ -1,7 +1,9 @@
-//Lưu các giá trị qua 1 tham chiếu bên ngoài function component
-import React, { useState, useRef, useEffect } from "react";
+//memo:khi component cha re-render nếu prop của content thay đổi thì re-render content,
+//nếu prop comtent không thay đổi thì ko re - render content
+//truyền prop Count từ cha vao con
+import React, { useState, useRef, useEffect, memo } from "react";
 
-function Content() {
+function Content({ Count }) {
   const [count, setCount] = useState(60);
   const timerId = useRef();
   const prevCount = useRef();
@@ -14,13 +16,16 @@ function Content() {
   const handleStop = () => {
     clearInterval(timerId.current);
   };
-  console.log(count, prevCount.current);
+  console.log("re-render");
+  //console.log(count, prevCount.current);
   return (
     <div>
+      <h1>{Count}</h1>
       <h1>{count}</h1>
+
       <button onClick={handleStart}>Start</button>
       <button onClick={handleStop}>Stop</button>
     </div>
   );
 }
-export default Content;
+export default memo(Content);
