@@ -7,45 +7,89 @@
 //2. action: up/down
 //3. reducer
 //4. dispatch
-import React, {
-  useCallback,
-  useMemo,
-  useState,
-  useRef,
-  useReducer,
-} from "react";
+import React, { useReducer, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Content from "./Content";
 
-//init state
-const initState = 0;
+//1. init state
+const initState = {
+  job: "",
+  jobs: [],
+};
+//2. action
+const SET_JOB = "set_job";
+const ADD_JOB = "add_job";
+const REMOVE_JOB = "remove_job";
 
-//action
-const UP_ACTION = "up";
-const DOWN_ACTION = "down";
-
-const reducer = (state, action) => {
-  console.log("reducer running");
-  switch (action) {
-    case UP_ACTION:
-      return state + 1;
-    case DOWN_ACTION:
-      return state - 1;
-    default:
-      throw new Error("Action is not valid");
-  }
+const setJob = (payload) => {
+  return {
+    type: SET_JOB,
+    payload,
+  };
 };
 
-function App() {
-  const [count, dispatch] = useReducer(reducer, initState);
+const addJob = (payload) => {
+  return {
+    type: ADD_JOB,
+    payload,
+  };
+};
 
+const deleteJob = (payload) => {
+  return {
+    type: REMOVE_JOB,
+    payload,
+  };
+};
+//3. reducer
+const reducer = (state, action) => {
+  switch (action.type) {
+    case SET_JOB:
+      return { ...state, job: action.payload };
+    case ADD_JOB:
+      return { ...state, jobs: [...state.jobs, action.payload] };
+    case REMOVE_JOB:
+      const newJobs = [...state.jobs];
+      newJobs.splice(action.payload, 1);
+      return { ...state, jobs: newJobs };
+    default:
+      throw new Error(`Invalid action`);
+  }
+};
+//4. dispatch
+
+function App() {
+  const [state, dispatch] = useReducer(reducer, initState);
+  const { job, jobs } = state;
+  const refJob = useRef();
   return (
     <>
       <div style={{ padding: "10px 30px" }}>
-        <h1>{count}</h1>
-        <button onClick={() => dispatch(DOWN_ACTION)}>Down</button>
-        <button onClick={() => dispatch(UP_ACTION)}>Up</button>
+        <h3>Todo</h3>
+        <input
+          value={job}
+          type="text"
+          placeholder="Enter new todo"
+          ref={refJob}
+          onChange={(e) => dispatch(setJob(e.target.value))}
+        />
+        <button
+          onClick={(e) => {
+            dispatch(addJob(job));
+            dispatch(setJob(""));
+            refJob.current.focus();
+          }}>
+          Add
+        </button>
+        <ul>
+          {state.jobs.map((job, index) => (
+            <li key={index}>
+              {job}{" "}
+              <span onClick={() => dispatch(deleteJob(index))}>&times;</span>
+            </li>
+          ))}
+        </ul>
       </div>
       <ToastContainer />
     </>
