@@ -3,7 +3,7 @@
 //truyền prop Count từ cha vao con
 import React, { useState, useRef, useEffect, memo } from "react";
 
-function Content({ Count }) {
+function Content({ onIncrease }) {
   const [count, setCount] = useState(60);
   const timerId = useRef();
   const prevCount = useRef();
@@ -20,11 +20,11 @@ function Content({ Count }) {
   //console.log(count, prevCount.current);
   return (
     <div>
-      <h1>{Count}</h1>
       <h1>{count}</h1>
 
       <button onClick={handleStart}>Start</button>
       <button onClick={handleStop}>Stop</button>
+      <button onClick={onIncrease}>Increase</button>
     </div>
   );
 }
