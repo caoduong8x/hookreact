@@ -36,7 +36,7 @@ const addJob = (payload) => {
   };
 };
 
-const deleteJob = (payload) => {
+const removeJob = (payload) => {
   return {
     type: REMOVE_JOB,
     payload,
@@ -54,7 +54,7 @@ const reducer = (state, action) => {
       newJobs.splice(action.payload, 1);
       return { ...state, jobs: newJobs };
     default:
-      throw new Error(`Invalid action`);
+      throw new Error("Invalid action");
   }
 };
 //4. dispatch
@@ -62,31 +62,30 @@ const reducer = (state, action) => {
 function App() {
   const [state, dispatch] = useReducer(reducer, initState);
   const { job, jobs } = state;
-  const refJob = useRef();
+  const inputRef = useRef();
   return (
     <>
-      <div style={{ padding: "10px 30px" }}>
-        <h3>Todo</h3>
+      <div style={{ padding: "10px 10px" }}>
         <input
-          value={job}
           type="text"
-          placeholder="Enter new todo"
-          ref={refJob}
+          placeholder="Enter todo here"
+          value={job}
+          ref={inputRef}
           onChange={(e) => dispatch(setJob(e.target.value))}
         />
         <button
-          onClick={(e) => {
+          onClick={() => {
             dispatch(addJob(job));
             dispatch(setJob(""));
-            refJob.current.focus();
+            inputRef.current.focus();
           }}>
           Add
         </button>
         <ul>
-          {state.jobs.map((job, index) => (
+          {jobs.map((job, index) => (
             <li key={index}>
               {job}{" "}
-              <span onClick={() => dispatch(deleteJob(index))}>&times;</span>
+              <span onClick={() => dispatch(removeJob(index))}>&times;</span>
             </li>
           ))}
         </ul>
